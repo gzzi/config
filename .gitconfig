@@ -1,0 +1,24 @@
+[alias]
+	tree = log --graph --decorate --pretty=oneline --abbrev-commit
+	smfe = submodule foreach
+	smfea = submodule--helper foreach --only-active
+
+;	git submodule enable all
+	smea = submodule foreach 'git -C $toplevel config --unset-all submodule.${name}.active || :'
+;	git submodule disable all
+	smda = submodule foreach 'git -C $toplevel config --bool submodule.${name}.active "false" || :'
+
+;	git submodule enable <submodule name> [<submodule name>...]
+	sme = "!sh -c 'for sm in \"$@\"; do git config submodule.${sm}.active "true"; done' -"
+
+;	git submodule disable <submodule name> [<submodule name>...]
+	sme = "!sh -c 'for sm in \"$@\"; do git config submodule.${sm}.active "false"; done' -"
+
+;	git branch create and push to origin
+	bcp = "!sh -c 'git checkout -b $1; git push --set-upstream origin $1' -"
+
+;	git submodule branch create, push to origin and update tracking branch in super
+	smfeabcput = "!sh -c 'git smfea \"git bcp $1 && git config -f \\${toplevel}/.gitmodules --replace-all submodule.\\${name}.branch $1\"' -"
+
+[core]
+	editor = emacs
