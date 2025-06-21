@@ -1,6 +1,6 @@
 # Ente
 
-On the following I use my local ip 192.168.1.243 but you can replace it with your domain to make it public
+On the following I use my local ip 192.168.xxx.xxx but you can replace it with your domain to make it public
 
 ## Install
 
@@ -48,14 +48,14 @@ On `compose.yaml` under `web` add:
 
 ```yaml
 environment:
-    ENTE_API_ORIGIN: http://192.168.1.243:8080
-    ENTE_ALBUMS_ORIGIN: https://192.168.1.243:3002
+    ENTE_API_ORIGIN: http://192.168.xxx.xxx:8080
+    ENTE_ALBUMS_ORIGIN: https://192.168.xxx.xxx:3002
 ```
 
 ## Create admin account
 
 
-Open browser to http://192.168.1.243:3000 and create a account.
+Open browser to http://192.168.xxx.xxx:3000 and create a account.
 
 On the log you will see the validation code close to the address email.
 
@@ -66,7 +66,7 @@ Create `config.yaml` for the cli:
 
 ```yaml
 endpoint:
-    api: "http://192.168.1.243:8080"
+    api: "http://192.168.xxx.xxx:8080"
 ```
 
 Then run 
@@ -82,7 +82,7 @@ Get the UserID and edit the file `my-ente/museum.yaml` to add at the end:
 ```yaml
 internal:
     admins:
-      - 158
+      - 158xxxxxxx
 ```
 
 restart ente server by doing
@@ -100,7 +100,7 @@ Then you can put no limit to your account with
 
 ## Setup storage for remote access
 
-In `museum.yaml` change all `s3.<bucket>.endpoint` to: `192.168.1.243:3200`.
+In `museum.yaml` change all `s3.<bucket>.endpoint` to: `192.168.xxx.xxx:3200`.
 
 ## Customize shared album link
 
@@ -108,67 +108,17 @@ In `museum.yaml` add:
 
 ```yaml
 apps:
-    public-albums: http://192.168.1.243:3002
+    public-albums: http://192.168.xxx.xxx:3002
 ```
 
 ## Auto start
 
 in compose.yaml add `restart: unless-stopped` after each `image:` field.
 
-## Infomaniak domain name lookup
-
-On the manager configure a dynamic dns entry for sub domaine (like ente.yourdomain.ch).
-
-https://manager.infomaniak.com/v3/xxx/ng/admin3/domain/yyy/dynamicdns
-
-
-```py
-#!/usr/bin/env python3
-import requests
-from pathlib import Path
-
-def main():
-
-    public_ip_file = Path('.public_ip')
-
-    public_ip = get_public_ip()
-    print(f'My public IP is {public_ip}')
-
-    if public_ip_file.exists() and public_ip_file.read_text() == public_ip:
-        print('IP has not changed')
-        return
-
-    success = update_dns(public_ip, 'pi.####.ch')
-    if not success:
-        print('DNS update failed for pi')
-        return
-
-    success = update_dns(public_ip, 'ente.####.ch')
-    if not success:
-        print('DNS update failed for ente')
-        return
-
-    public_ip_file.write_text(public_ip)
-    print('DNS updated')
-
-def get_public_ip():
-    return requests.get('https://api.ipify.org').text
-
-def update_dns(public_ip: str, domain: str):
-    username = '####'
-    password = '####'
-    ip = public_ip
-    url = f'https://infomaniak.com/nic/update?hostname={domain}&username={username}&password={password}&myip={ip}'
-
-    r = requests.post(url)
-    print(r.text)
-    return r.status_code == 200
-
-if __name__ == '__main__':
-    main()
-```
-
 ## Mobile app
 
 be sure to use a version with the fix mentionned in https://github.com/ente-io/ente/issues/6186 (not the case today on play store...)
 
+## Reverse Proxy
+
+Once everything works with this configuration, you can use a reverse proxy to use https protocol and avoid opening direct port on your router.
